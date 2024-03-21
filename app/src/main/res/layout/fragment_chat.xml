@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".chat.chatFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+        <ImageView
+            android:id="@+id/bnt_keyboard"
+            android:layout_margin="2sp"
+            android:layout_width="0sp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:src="@drawable/keyboard"/>
+        <Button
+            android:id="@+id/chat_voice_record"
+            android:layout_margin="2sp"
+            android:gravity="center"
+            android:layout_width="0sp"
+            android:layout_weight="9"
+            android:layout_height="32sp"
+            android:background="@drawable/chat_record_selector"
+            android:hint="按住说话" />
+    </LinearLayout>
+
+</FrameLayout>
