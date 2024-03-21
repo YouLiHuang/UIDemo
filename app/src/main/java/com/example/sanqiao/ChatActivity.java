@@ -483,18 +483,17 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         request.contentType("application/json");//设置contentType
         request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
         /*解析id*/
-        String session_id = null;
-        String id = readJsonFile(id_file_path);//读取id的json文件
+
+        String session_id = readJsonFile(id_file_path);//读取id的json文件
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(id);
+            jsonObject = new JSONObject(session_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Iterator<String> keys = jsonObject.keys();
         String keyname = String.valueOf(keys.next());
-        session_id = jsonObject.optString(keyname);
-        id = session_id;//得到最终的id
+        id = jsonObject.optString(keyname);
 
         /*获取id成功，并构建新的url进行查新*/
         if(id!=null)

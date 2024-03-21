@@ -86,7 +86,7 @@ public class CirclePgBar extends View {
         float angle = mProgress / (float) mMax * 360;
         canvas.drawCircle(mWidth / 2, mHeight / 2, mRadius, mBackPaint);
         canvas.drawArc(mRect, -90, angle, false, mFrontPaint);//绘制圆弧
-        canvas.drawText(mProgress + "%", mWidth / 2 + mHalfStrokeWidth, mHeight / 2 + mHalfStrokeWidth, mTextPaint);
+        canvas.drawText(mProgress*(-0.6)+60 + "s", mWidth / 2 + mHalfStrokeWidth, mHeight / 2 + mHalfStrokeWidth, mTextPaint);
         invalidate();
 
     }
