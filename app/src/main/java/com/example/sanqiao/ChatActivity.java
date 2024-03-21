@@ -304,7 +304,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                     while (true&&!pgBar_pause)
                     {
                         int value=pgBar.get_mProgress();
-                        if(value<100)
+                        if(value<60)
                         {
                             pgBar.set_mProgress(value+1);//修改进度值
                         }
@@ -323,7 +323,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
                         }
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
@@ -371,7 +371,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             e.printStackTrace();
         }
         // 创建一个新的 Message 对象
-        Message responseMessage = new Message("语音识别结果：" + final_response, Message.TYPE_SENT);//回显解析结果
+        Message responseMessage = new Message("识别结果：" + final_response, Message.TYPE_SENT);//回显解析结果
         //Message timeMessage = new Message("耗时："+final_time, Message.TYPE_RECEIVED);//回显解析结果
         // 将新消息添加到消息列表中
         messages.add(responseMessage);
