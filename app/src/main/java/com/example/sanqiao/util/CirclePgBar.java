@@ -15,14 +15,12 @@ public class CirclePgBar extends View {
     private Paint mBackPaint;
     private Paint mFrontPaint;
     private Paint mTextPaint;
-    private float mStrokeWidth = 50;
+    private float mStrokeWidth = 20;
     private float mHalfStrokeWidth = mStrokeWidth / 2;
-    private float mRadius = 200;
+    private float mRadius = 205;
     private RectF mRect;
     private int mProgress = 0;
-    //目标值，想改多少就改多少
-    private int mTargetProgress = 100;
-    private int mMax = 100;
+    private int mMax = 60;
     private int mWidth;
     private int mHeight;
     public interface timeout_listener{
@@ -56,7 +54,7 @@ public class CirclePgBar extends View {
         mBackPaint.setStrokeWidth(mStrokeWidth);
 
         mFrontPaint = new Paint();
-        mFrontPaint.setColor(R.color.red);
+        mFrontPaint.setColor(R.color.grey);
         mFrontPaint.setAntiAlias(true);
         mFrontPaint.setStyle(Paint.Style.STROKE);
         mFrontPaint.setStrokeWidth(mStrokeWidth);
@@ -83,10 +81,10 @@ public class CirclePgBar extends View {
     protected void onDraw(Canvas canvas) {
 
         initRect();
-        float angle = mProgress / (float) mMax * 360;
-        canvas.drawCircle(mWidth / 2, mHeight / 2, mRadius, mBackPaint);
+        float angle = -mProgress / (float) mMax * 360+360;
+        canvas.drawCircle(mWidth / 2, mHeight /2, mRadius, mBackPaint);
         canvas.drawArc(mRect, -90, angle, false, mFrontPaint);//绘制圆弧
-        canvas.drawText(mProgress*(-0.6)+60 + "s", mWidth / 2 + mHalfStrokeWidth, mHeight / 2 + mHalfStrokeWidth, mTextPaint);
+        canvas.drawText(String.valueOf(mProgress), mWidth /2 + mHalfStrokeWidth, mHeight / 2 + mHalfStrokeWidth, mTextPaint);
         invalidate();
 
     }

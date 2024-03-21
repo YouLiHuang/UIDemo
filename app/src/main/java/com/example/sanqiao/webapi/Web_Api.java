@@ -1,5 +1,8 @@
 package com.example.sanqiao.webapi;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.example.sanqiao.util.FileUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -45,6 +48,7 @@ public class Web_Api extends WebSocketListener {
         void onTaskCompleted();
     }
     covert_finished_listener listener;
+
     public Web_Api(Set<String> list, String recordPath,String parsePath,covert_finished_listener listener) {
         this.data_list = list;
         if (!data_list.isEmpty()) {
@@ -53,6 +57,7 @@ public class Web_Api extends WebSocketListener {
         this.recordPath = recordPath;
         this.parsePath=parsePath;
         this.listener=listener;
+
     }
 
 
@@ -61,6 +66,20 @@ public class Web_Api extends WebSocketListener {
     }
 
 
+    @Override
+    public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
+        super.onFailure(webSocket, t, response);
+        /*解析失，无数据*/
+        try {
+            JSONObject json = new JSONObject();
+            json.put("response", "网络错误，请检查网络是否连接");
+            FileUtil.saveText(parsePath, json.toString());
+            listener.onTaskCompleted();//回到activity当中实现UI
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
@@ -168,7 +187,6 @@ public class Web_Api extends WebSocketListener {
                 }
                 if (resp.getData().getStatus() == 2) {
                     // todo  resp.data.status ==2 说明数据全部返回完毕，可以关闭连接，释放资源
-                    //data_list.add("session end ");
                     dateEnd = new Date();
 /*                    data_list.add(sdf.format(dateBegin) + "开始");
                     data_list.add(sdf.format(dateEnd) + "结束");*/
