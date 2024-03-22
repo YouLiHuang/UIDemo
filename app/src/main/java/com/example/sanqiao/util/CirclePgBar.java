@@ -17,7 +17,7 @@ public class CirclePgBar extends View {
     private Paint mTextPaint;
     private float mStrokeWidth = 20;
     private float mHalfStrokeWidth = mStrokeWidth / 2;
-    private float mRadius = 200;
+    private float mRadius = 210;
     private RectF mRect;
     private int mProgress = 0;
     private int mMax = 60;
