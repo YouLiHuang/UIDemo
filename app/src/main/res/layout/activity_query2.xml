@@ -8,6 +8,15 @@
     android:layout_margin="5dp"
     tools:context=".query2Activity">
 
+    <LinearLayout
+        android:id="@+id/activity_query2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +29,7 @@
             android:layout_height="32dp"
             android:src="@drawable/back" />
         <TextView
-            android:id="@+id/tv_weldThinkness"
+            android:id="@+id/tv_wireDiameter"
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:layout_toRightOf="@id/btn_back"
@@ -73,5 +82,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    </LinearLayout>
 
 </LinearLayout>
