@@ -113,7 +113,7 @@ public class chatFragment extends Fragment implements Web_Api.covert_finished_li
     private String mParam2;
     static private String recordPath;
     static private String WebResponsePath;
-    private String parsePath;
+    static private String parsePath;
 
     public chatFragment() {
         // Required empty public constructor
