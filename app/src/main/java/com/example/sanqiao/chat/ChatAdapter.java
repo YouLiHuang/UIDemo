@@ -32,7 +32,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    /*创建一个试图持有者，根据试图类型决定创建发送/接收两类持有者*/
+    /*创建一个视图持有者，根据试图类型决定创建发送/接收两类持有者*/
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
