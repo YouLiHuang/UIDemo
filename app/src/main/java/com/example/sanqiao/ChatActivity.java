@@ -410,7 +410,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
     public void Query(String query) {
         timer = new Thread(new Runnable() {
-            final long timeout = 5000;
+            final long timeout = 10000;
             long currentTime = 0;
             long startTime = System.currentTimeMillis();
 
@@ -551,7 +551,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Message responseMessage = new Message("好的，现在为您查询焊接参数。", Message.TYPE_RECEIVED);
+                                    Message responseMessage = new Message("好的，现在为您查询焊接参数，请稍等...", Message.TYPE_RECEIVED);
                                     messages.add(responseMessage);
                                     Handler mainHandler = new Handler(Looper.getMainLooper());
                                     // 通知 Adapter 数据已经改变
