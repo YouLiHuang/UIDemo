@@ -91,10 +91,10 @@ public class query2Activity extends AppCompatActivity implements View.OnClickLis
                 keys.add("PulsingCurrent");
                 keys.add("PulseFreqency");
                 keys.add("WireFeedSpeed");
-                keys.add("Voltage command value");
-                keys.add("Guideline value for material");
-                keys.add("Amperage guideline value");
-                keys.add("Voltage guideline value");
+                //keys.add("Voltage command value");
+                //keys.add("Guideline value for material");
+                //keys.add("Amperage guideline value");
+                //keys.add("Voltage guideline value");
 
                 Cursor cursor = null;
                 wlist = new ArrayList<>();

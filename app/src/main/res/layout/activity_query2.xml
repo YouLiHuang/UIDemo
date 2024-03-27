@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="5dp"
-    tools:context=".query2Activity">
+    android:padding="5dp"
+    tools:context=".query2Activity"
+    android:background="@drawable/file_dir_background">
 
     <LinearLayout
         android:id="@+id/activity_query2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+
         android:clickable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
