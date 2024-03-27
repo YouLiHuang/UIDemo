@@ -7,6 +7,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -61,6 +62,12 @@ public class query1Activity extends AppCompatActivity implements View.OnClickLis
         lv_user = findViewById(R.id.lv_user);
         gestureDetector=new GestureDetector(this,new MyGestureListener());
         lv_user.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return false;
+        });
+        //在listview区域外也能滑动
+        LinearLayout layout = findViewById(R.id.activity_query1);
+        layout.setOnTouchListener((v, event) -> {
             gestureDetector.onTouchEvent(event);
             return false;
         });

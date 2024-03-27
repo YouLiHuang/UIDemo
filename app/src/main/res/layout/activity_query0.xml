@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="5dp"
-    tools:context=".query0Activity">
+    android:padding="5dp"
+    tools:context=".query0Activity"
+    android:background="@drawable/file_dir_background">
 
     <RelativeLayout
         android:layout_width="match_parent"

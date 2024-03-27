@@ -6,6 +6,7 @@ import static com.example.sanqiao.util.queryUtil.readJsonFile;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -47,6 +48,8 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -544,6 +547,31 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
                             filename = getFilename(response);
                             //alter_info(response);//弹出对话框，支持页面转跳
+                            /*显示对话*/
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Message responseMessage = new Message("好的，现在为您查询焊接参数。", Message.TYPE_RECEIVED);
+                                    messages.add(responseMessage);
+                                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                                    // 通知 Adapter 数据已经改变
+                                    adapter.notifyItemInserted(messages.size() - 1);
+                                    recyclerView.scrollToPosition(messages.size() - 1);
+                                }
+                            });
+                            String finalResponse_str = response_str;
+                            new Timer().schedule(new TimerTask() {//2s后跳转界面
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(ChatActivity.this, query1Activity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("response_json", finalResponse_str);
+                                    bundle.putString("response_filepath", WebResponsePath);
+                                    bundle.putString("response_filename", filename);
+                                    intent.putExtras(bundle);
+                                    startActivity(intent);
+                                }
+                            }, 2000);
                         }
                     }/*data不存在*/
                     catch (Exception e)
@@ -639,7 +667,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Message responseMessage = new Message("", Message.TYPE_RECEIVED);
+                                Message responseMessage = new Message("好的，现在为您查询焊接参数。", Message.TYPE_RECEIVED);
                                 messages.add(responseMessage);
                                 Handler mainHandler = new Handler(Looper.getMainLooper());
                                 // 通知 Adapter 数据已经改变
@@ -648,6 +676,19 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             }
                         });
                         //alter_info(response);//弹出对话框，支持页面转跳
+                        String finalResponse_str = response_str;
+                        new Timer().schedule(new TimerTask() {//2s后跳转界面
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(ChatActivity.this, query1Activity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("response_json", finalResponse_str);
+                                bundle.putString("response_filepath", WebResponsePath);
+                                bundle.putString("response_filename", filename);
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                            }
+                        }, 2000);
                     }
                 }
                 catch (Exception e)

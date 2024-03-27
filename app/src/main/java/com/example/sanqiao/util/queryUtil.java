@@ -62,6 +62,14 @@ public class queryUtil {
     //读取json字符串中的嵌套数据, 并返回list
     public static List<Weldinginfo> parseJson(String jsonstr) {
 
+        //需要显示的参数
+        ArrayList<String> keys = new ArrayList<>();
+        keys.add("ArcingCurrent");
+        keys.add("PulseBaseCurrent");
+        keys.add("PulsingCurrent");
+        keys.add("PulseFreqency");
+        keys.add("WireFeedSpeed");
+
         List<Weldinginfo> wlist = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(jsonstr);
@@ -86,12 +94,14 @@ public class queryUtil {
                     Iterator<String> param_keys = param.keys();//获取单个参数的所有键
                     //然后通过一个循环取出所有的key值
                     while (param_keys.hasNext()) {
-                        oneGroupInfo item = new oneGroupInfo();//创建单个参数对象
                         String param_name = param_keys.next().toString();
                         String value = param.optString(param_name);//获取参数名称对应的数值
-                        item.setParamValue(value);//设置参数的数值
-                        item.setParamName(param_name);//设置参数名称
-                        list.add(item);//将设置好的参数加入列表当中
+                        if (keys.contains(param_name)) {//仅显示可调节的参数
+                            oneGroupInfo item = new oneGroupInfo();//创建单个参数对象
+                            item.setParamValue(value);//设置参数的数值
+                            item.setParamName(param_name);//设置参数名称
+                            list.add(item);//将设置好的参数加入列表当中
+                        }
                     }
 
                 }
