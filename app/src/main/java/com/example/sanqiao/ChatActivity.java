@@ -667,7 +667,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Message responseMessage = new Message("好的，现在为您查询焊接参数。", Message.TYPE_RECEIVED);
+                                Message responseMessage = new Message("好的，现在为您查询焊接参数...", Message.TYPE_RECEIVED);
                                 messages.add(responseMessage);
                                 Handler mainHandler = new Handler(Looper.getMainLooper());
                                 // 通知 Adapter 数据已经改变
@@ -675,7 +675,6 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 recyclerView.scrollToPosition(messages.size() - 1);
                             }
                         });
-                        //alter_info(response);//弹出对话框，支持页面转跳
                         String finalResponse_str = response_str;
                         new Timer().schedule(new TimerTask() {//2s后跳转界面
                             @Override
