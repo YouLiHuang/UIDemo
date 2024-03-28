@@ -540,8 +540,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                     //获取json下response节点下的data节点
                     try {
                         jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
-                        /*data存在*/
-                        if(jsonObject_data!=null)  {
+                        /*data存在且非空*/
+                        if(jsonObject_data!=null && jsonObject_data.length() != 0)  {
                             Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
                             String keyName=String.valueOf(response_keys.next());//取键名
                             String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
@@ -560,7 +560,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 }
                             });
                             String finalResponse_str = response_str;
-                            new Timer().schedule(new TimerTask() {//2s后跳转界面
+                            new Timer().schedule(new TimerTask() {//3s后跳转界面
                                 @Override
                                 public void run() {
                                     Intent intent = new Intent(ChatActivity.this, query1Activity.class);
@@ -571,7 +571,20 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                     intent.putExtras(bundle);
                                     startActivity(intent);
                                 }
-                            }, 2000);
+                            }, 3000);
+                        } else {
+                            /*显示对话*/
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Message responseMessage = new Message("抱歉，数据库暂无此类数据", Message.TYPE_RECEIVED);
+                                    messages.add(responseMessage);
+                                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                                    // 通知 Adapter 数据已经改变
+                                    adapter.notifyItemInserted(messages.size() - 1);
+                                    recyclerView.scrollToPosition(messages.size() - 1);
+                                }
+                            });
                         }
                     }/*data不存在*/
                     catch (Exception e)
@@ -656,8 +669,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                 //获取json下response节点下的data节点
                 try {
                    jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
-                    /*data存在*/
-                    if(jsonObject_data!=null)  {
+                    /*data存在且非空*/
+                    if(jsonObject_data!=null && jsonObject_data.length() != 0)  {
                         Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
                         String keyName=String.valueOf(response_keys.next());//取键名
                         String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
@@ -677,7 +690,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         });
                         //alter_info(response);//弹出对话框，支持页面转跳
                         String finalResponse_str = response_str;
-                        new Timer().schedule(new TimerTask() {//2s后跳转界面
+                        new Timer().schedule(new TimerTask() {//3s后跳转界面
                             @Override
                             public void run() {
                                 Intent intent = new Intent(ChatActivity.this, query1Activity.class);
@@ -688,7 +701,20 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 intent.putExtras(bundle);
                                 startActivity(intent);
                             }
-                        }, 2000);
+                        }, 3000);
+                    } else {
+                        /*显示对话*/
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Message responseMessage = new Message("抱歉，数据库暂无此类数据", Message.TYPE_RECEIVED);
+                                messages.add(responseMessage);
+                                Handler mainHandler = new Handler(Looper.getMainLooper());
+                                // 通知 Adapter 数据已经改变
+                                adapter.notifyItemInserted(messages.size() - 1);
+                                recyclerView.scrollToPosition(messages.size() - 1);
+                            }
+                        });
                     }
                 }
                 catch (Exception e)
