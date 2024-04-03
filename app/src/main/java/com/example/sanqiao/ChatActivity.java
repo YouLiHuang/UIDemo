@@ -16,10 +16,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +44,8 @@ import com.example.sanqiao.util.CirclePgBar;
 import com.example.sanqiao.util.CommonUtils;
 import com.example.sanqiao.util.FileUtil;
 import com.example.sanqiao.util.HttpRequest;
+import com.example.sanqiao.util.Weldinginfo;
+import com.example.sanqiao.util.queryUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -547,11 +554,13 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
                             filename = getFilename(response);
                             //alter_info(response);//弹出对话框，支持页面转跳
+                            List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
+                            String result = queryUtil.getResult(weldinginfoList);
                             /*显示对话*/
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Message responseMessage = new Message("好的，现在为您查询焊接参数，请稍等...", Message.TYPE_RECEIVED);
+                                    Message responseMessage = new Message(result, Message.TYPE_RECEIVED);
                                     messages.add(responseMessage);
                                     Handler mainHandler = new Handler(Looper.getMainLooper());
                                     // 通知 Adapter 数据已经改变
@@ -559,19 +568,6 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                     recyclerView.scrollToPosition(messages.size() - 1);
                                 }
                             });
-                            String finalResponse_str = response_str;
-                            new Timer().schedule(new TimerTask() {//3s后跳转界面
-                                @Override
-                                public void run() {
-                                    Intent intent = new Intent(ChatActivity.this, query1Activity.class);
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString("response_json", finalResponse_str);
-                                    bundle.putString("response_filepath", WebResponsePath);
-                                    bundle.putString("response_filename", filename);
-                                    intent.putExtras(bundle);
-                                    startActivity(intent);
-                                }
-                            }, 3000);
                         } else {
                             /*显示对话*/
                             mainHandler.post(new Runnable() {
@@ -676,11 +672,15 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
                         filename = getFilename(response);
 
+
+                        List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
+                        String result = queryUtil.getResult(weldinginfoList);
+
                         /*显示对话*/
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Message responseMessage = new Message("好的，现在为您查询焊接参数。", Message.TYPE_RECEIVED);
+                                Message responseMessage = new Message(result, Message.TYPE_RECEIVED);
                                 messages.add(responseMessage);
                                 Handler mainHandler = new Handler(Looper.getMainLooper());
                                 // 通知 Adapter 数据已经改变
@@ -688,20 +688,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 recyclerView.scrollToPosition(messages.size() - 1);
                             }
                         });
-                        //alter_info(response);//弹出对话框，支持页面转跳
-                        String finalResponse_str = response_str;
-                        new Timer().schedule(new TimerTask() {//3s后跳转界面
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(ChatActivity.this, query1Activity.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString("response_json", finalResponse_str);
-                                bundle.putString("response_filepath", WebResponsePath);
-                                bundle.putString("response_filename", filename);
-                                intent.putExtras(bundle);
-                                startActivity(intent);
-                            }
-                        }, 3000);
+
                     } else {
                         /*显示对话*/
                         mainHandler.post(new Runnable() {
