@@ -1,6 +1,9 @@
 package com.example.sanqiao.util;
 
 
+import android.graphics.Paint;
+import android.graphics.fonts.Font;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,6 +117,42 @@ public class queryUtil {
             throw new RuntimeException(e);
         }
         return wlist;
+    }
+
+    //将list转换为字符串
+    public static String getResult(List<Weldinginfo> wlist) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Weldinginfo witem : wlist) {
+
+            String wireDiameter = witem.getWireDiameter();
+            stringBuilder.append(wireDiameter).append("\n");
+
+            List<oneGroupInfo> groupInfoList = witem.getWeldingList();
+
+            int maxParamNameLength = 0;
+            for (oneGroupInfo item : groupInfoList) {
+                String paramName = item.getParamName();
+                maxParamNameLength = Math.max(maxParamNameLength, paramName.length());
+            }
+
+            // 拼接参数信息
+            for (oneGroupInfo item : groupInfoList) {
+                String paramName = item.getParamName();
+                String paramValue = item.getParamValue();
+
+                stringBuilder.append(paramName);
+                // 添加空格，以保证参数值左对齐
+                int remainingTabs = maxParamNameLength - paramName.length() + 4;
+                for (int i = 0; i < remainingTabs; i++) {
+                    stringBuilder.append(" ");
+                }
+
+                stringBuilder.append(paramValue).append(" ").append("\n");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 
     /*--------------------------------分界线---------------------------------*/
