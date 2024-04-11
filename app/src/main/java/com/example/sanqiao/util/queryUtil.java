@@ -31,6 +31,7 @@ public class queryUtil {
         HttpRequest request=new HttpRequest(uri,"POST");//创建一个请求
         request.acceptJson();//设置header
         request.contentType("application/json");//设置contentType
+        request.connectTimeout(10000);
         return request.send(post_input).receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
 
     }

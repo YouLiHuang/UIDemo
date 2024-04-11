@@ -66,7 +66,6 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
     private Handler mainHandler=new Handler(Looper.getMainLooper());   // 主线程
     private Thread networkThread;
-    private Thread timer;
     private String id = null;
     final String url = "http://61.142.130.81:8001/api/session/";
     private RelativeLayout main_layout;
@@ -174,6 +173,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         findViewById(R.id.chat_clear).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                id=null;
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -417,35 +417,11 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
     }
 
     public void Query(String query) {
-        timer = new Thread(new Runnable() {
-            final long timeout = 10000;
-            long currentTime = 0;
-            long startTime = System.currentTimeMillis();
-
-            @Override
-            public void run() {
-                while (true) {
-                    currentTime = System.currentTimeMillis();
-                    if (currentTime - startTime > timeout) {
-                        // 线程已经超时
-                        startTime = System.currentTimeMillis();//复位
-                        networkThread.interrupt();
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000); // 每隔1秒检查一次
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
         /*开始查询*/
         networkThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    timer.start();//开启超时检测线程
                     if (!Thread.currentThread().isInterrupted())//中断检测
                     {
                         if (id == null) query_idNull(query);
@@ -490,11 +466,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         post_output = new File(id_file_path);//输出流，解析得到的查询命令
         /*设置请求*/
         HttpRequest request = new HttpRequest("http://61.142.130.81:8001/api/session/start", "POST");
+        request.connectTimeout(10000);//10s超时
         request.acceptJson();//设置header
         request.contentType("application/json");//设置contentType
         request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
-        /*解析id*/
 
+        /*解析id*/
         String session_id = readJsonFile(id_file_path);//读取id的json文件
         JSONObject jsonObject = null;
         try {
@@ -538,7 +515,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             adapter.notifyItemInserted(messages.size() - 1);
                             recyclerView.scrollToPosition(messages.size() - 1);
                         }
-                    });
+                    });//查询失败
                 }
                 else
                 {
@@ -628,7 +605,6 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
     }
 
-    /*id非空的查询方法*/
     private void query_withId(String query) {
         StringBuilder sb=new StringBuilder();
         sb.append(url).append(id).append("/?query=").append(query);/*构建新的url*/
@@ -666,7 +642,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                 JSONObject jsonObject_data=null;
                 //获取json下response节点下的data节点
                 try {
-                   jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
+                    jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
                     /*data存在且非空*/
                     if(jsonObject_data!=null && jsonObject_data.length() != 0)  {
                         Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
@@ -725,7 +701,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
 
             }
-        }catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
