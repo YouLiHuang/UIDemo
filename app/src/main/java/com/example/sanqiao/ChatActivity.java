@@ -569,54 +569,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             //alter_info(response);//弹出对话框，支持页面转跳
                             List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                             //String result = queryUtil.getResult(weldinginfoList);
-                            //将list转换为字符串
-                            for (Weldinginfo witem : weldinginfoList) {
-                                StringBuilder stringBuilder = new StringBuilder();
-                                String wireDiameter = witem.getWireDiameter();
-                                stringBuilder.append(wireDiameter).append("\n");
-
-                                List<oneGroupInfo> groupInfoList = witem.getWeldingList();
-
-                                int maxParamNameLength = 0;
-                                for (oneGroupInfo item : groupInfoList) {
-                                    String paramName = item.getParamName();
-                                    maxParamNameLength = Math.max(maxParamNameLength, paramName.length());
-                                }
-
-                                // 拼接参数信息
-                                for (int i = 0; i < groupInfoList.size(); i++) {
-                                    oneGroupInfo item = groupInfoList.get(i);
-                                    String paramName = item.getParamName();
-                                    String paramValue = item.getParamValue();
-
-                                    stringBuilder.append(paramName);
-                                    // 添加空格，以保证参数值左对齐
-                                    int addTabs = maxParamNameLength - paramName.length() + 4;
-                                    for (int j = 0; j < addTabs; j++) {
-                                        stringBuilder.append(" ");
-                                    }
-
-                                    stringBuilder.append(paramValue);
-                                    // 如果不是最后一行，则添加换行符
-                                    if (i < groupInfoList.size() - 1) {
-                                        stringBuilder.append("\n");
-                                    }
-                                }
-
-                                String result = stringBuilder.toString();
-                                /*显示对话*/
-                                mainHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Message responseMessage = new Message(result, Message.TYPE_RECEIVED);
-                                        messages.add(responseMessage);
-                                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                                        // 通知 Adapter 数据已经改变
-                                        adapter.notifyItemInserted(messages.size() - 1);
-                                        recyclerView.scrollToPosition(messages.size() - 1);
-                                    }
-                                });
-                            }
+                            List_to_String(weldinginfoList);
                         } else {
                             /*显示对话*/
                             mainHandler.post(new Runnable() {
@@ -735,54 +688,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
                         List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                         //String result = queryUtil.getResult(weldinginfoList);
-                        //将list转换为字符串
-                        for (Weldinginfo witem : weldinginfoList) {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            String wireDiameter = witem.getWireDiameter();
-                            stringBuilder.append(wireDiameter).append("\n");
-
-                            List<oneGroupInfo> groupInfoList = witem.getWeldingList();
-
-                            int maxParamNameLength = 0;
-                            for (oneGroupInfo item : groupInfoList) {
-                                String paramName = item.getParamName();
-                                maxParamNameLength = Math.max(maxParamNameLength, paramName.length());
-                            }
-
-                            // 拼接参数信息
-                            for (int i = 0; i < groupInfoList.size(); i++) {
-                                oneGroupInfo item = groupInfoList.get(i);
-                                String paramName = item.getParamName();
-                                String paramValue = item.getParamValue();
-
-                                stringBuilder.append(paramName);
-                                // 添加空格，以保证参数值左对齐
-                                int addTabs = maxParamNameLength - paramName.length() + 4;
-                                for (int j = 0; j < addTabs; j++) {
-                                    stringBuilder.append(" ");
-                                }
-
-                                stringBuilder.append(paramValue);
-                                // 如果不是最后一行，则添加换行符
-                                if (i < groupInfoList.size() - 1) {
-                                    stringBuilder.append("\n");
-                                }
-                            }
-
-                            String result = stringBuilder.toString();
-                            /*显示对话*/
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Message responseMessage = new Message(result, Message.TYPE_RECEIVED);
-                                    messages.add(responseMessage);
-                                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                                    // 通知 Adapter 数据已经改变
-                                    adapter.notifyItemInserted(messages.size() - 1);
-                                    recyclerView.scrollToPosition(messages.size() - 1);
-                                }
-                            });
-                        }
+                        List_to_String(weldinginfoList);
                     } else {
                         /*显示对话*/
                         mainHandler.post(new Runnable() {
@@ -826,6 +732,56 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
     }
 
+    //将list转换为字符
+    private void List_to_String(List<Weldinginfo> wList) {
+        for (Weldinginfo witem : wList) {
+            StringBuilder stringBuilder = new StringBuilder();
+            String wireDiameter = witem.getWireDiameter();
+            stringBuilder.append(wireDiameter).append("\n");
+
+            List<oneGroupInfo> groupInfoList = witem.getWeldingList();
+
+            int maxParamNameLength = 0;
+            for (oneGroupInfo item : groupInfoList) {
+                String paramName = item.getParamName();
+                maxParamNameLength = Math.max(maxParamNameLength, paramName.length());
+            }
+
+            // 拼接参数信息
+            for (int i = 0; i < groupInfoList.size(); i++) {
+                oneGroupInfo item = groupInfoList.get(i);
+                String paramName = item.getParamName();
+                String paramValue = item.getParamValue();
+
+                stringBuilder.append(paramName);
+                // 添加空格，以保证参数值左对齐
+                int addTabs = maxParamNameLength - paramName.length() + 4;
+                for (int j = 0; j < addTabs; j++) {
+                    stringBuilder.append(" ");
+                }
+
+                stringBuilder.append(paramValue);
+                // 如果不是最后一行，则添加换行符
+                if (i < groupInfoList.size() - 1) {
+                    stringBuilder.append("\n");
+                }
+            }
+
+            String result = stringBuilder.toString();
+            /*显示对话*/
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Message responseMessage = new Message(result, Message.TYPE_RECEIVED);
+                    messages.add(responseMessage);
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // 通知 Adapter 数据已经改变
+                    adapter.notifyItemInserted(messages.size() - 1);
+                    recyclerView.scrollToPosition(messages.size() - 1);
+                }
+            });
+        }
+    }
 
 
 }
