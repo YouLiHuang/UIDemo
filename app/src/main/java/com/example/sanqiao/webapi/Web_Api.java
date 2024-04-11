@@ -113,6 +113,7 @@ public class Web_Api extends WebSocketListener {
                                 business.addProperty("domain", "iat");
                                 business.addProperty("accent", "mandarin");//中文方言请在控制台添加试用，添加后即展示相应参数值
                                 business.addProperty("dwa", "wpgs");//动态修正(若未授权不生效，在控制台可免费开通)
+                                business.addProperty("vad_eos",5000);
                                 //填充data
                                 data.addProperty("status", StatusFirstFrame);
                                 data.addProperty("format", "audio/L16;rate=16000");

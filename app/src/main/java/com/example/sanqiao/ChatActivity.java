@@ -455,7 +455,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             request.acceptJson();//设置header
             request.contentType("application/json");//设置contentType
             request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
-        } catch (RuntimeException e) {
+        }
+        catch (RuntimeException e) {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
