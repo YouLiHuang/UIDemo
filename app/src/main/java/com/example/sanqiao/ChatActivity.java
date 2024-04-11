@@ -440,7 +440,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             fw.write("");
             fw.flush();
             fw.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -474,14 +475,15 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         try {
             jsonObject = new JSONObject(session_id);
         } catch (JSONException e) {
-            e.printStackTrace();
+            e.printStackTrace();//js报错
         }
         Iterator<String> keys = jsonObject.keys();
         String keyname = String.valueOf(keys.next());
         id = jsonObject.optString(keyname);
 
         /*获取id成功，并构建新的url进行查新*/
-        if (id != null) {
+        if (id != null)
+        {
             StringBuilder sb = new StringBuilder();
             sb.append(url).append(id).append("/?query=").append(query);/*构建新的url*/
 
@@ -499,7 +501,6 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             catch (Exception e) {
                 e.printStackTrace();
             }
-
             /*发起查询*/
             try {
                 queryRequest(query_file_path, WebResponsePath, sb.toString());//post查询
@@ -520,7 +521,9 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             /*解析查询结果*/
             String response_str = null;//清空字符串
             response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
-            if (response_str == null) {
+            /*查询结果为空*/
+            if (response_str == null)
+            {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -531,15 +534,19 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         adapter.notifyItemInserted(messages.size() - 1);
                         recyclerView.scrollToPosition(messages.size() - 1);
                     }
-                });//查询失败
-            } else {
+                });
+            }
+            else
+            {
                 JSONObject jsonObject_data = null;
                 try {
                     JSONObject jsonObject2 = new JSONObject(response_str);//创建响应文件json对象
-                    try {//尝试获取json下response节点下的data节点
+                    //尝试获取json下response节点下的data节点，并进行数据解析
+                    try {
                         jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
                         /*data存在且非空*/
-                        if (jsonObject_data != null && jsonObject_data.length() != 0) {
+                        if (jsonObject_data != null && jsonObject_data.length() != 0)
+                        {
                             Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
                             String keyName = String.valueOf(response_keys.next());//取键名
                             String response = jsonObject2.optJSONObject("response").optString(keyName);//取值
@@ -556,7 +563,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                     recyclerView.scrollToPosition(messages.size() - 1);
                                 }
                             });
-                            //alter_info(response);//弹出对话框，支持页面转跳
+
                             List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                             //String result = queryUtil.getResult(weldinginfoList);
                             //将list转换为字符串
@@ -594,7 +601,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 }
 
                                 String result = stringBuilder.toString();
-                                /*显示对话*/
+                                /*显示参数*/
                                 mainHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -604,10 +611,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                         // 通知 Adapter 数据已经改变
                                         adapter.notifyItemInserted(messages.size() - 1);
                                         recyclerView.scrollToPosition(messages.size() - 1);
+                                        id=null;//结束对话，进入下一轮
                                     }
                                 });
                             }
-                        } else {
+                        }
+                        else {
                             /*显示对话*/
                             mainHandler.post(new Runnable() {
                                 @Override
@@ -618,11 +627,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                     // 通知 Adapter 数据已经改变
                                     adapter.notifyItemInserted(messages.size() - 1);
                                     recyclerView.scrollToPosition(messages.size() - 1);
+                                    id=null;
                                 }
                             });
-                        }
-                    }/*data不存在*/ catch (Exception e) {
-                        /*没有data节点*/
+                        }//数据库无数据
+                    }
+                    catch (Exception e) {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -637,11 +647,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 recyclerView.scrollToPosition(messages.size() - 1);
                             }
                         });
-                    }
-                } catch (Exception e) {
+                    }/*没有data节点*/
+                }
+                catch (Exception e) {
+                    /*js报错*/
                     e.printStackTrace();
                 }
-
 
             }
 
@@ -679,7 +690,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             fw.write(query_js.toString());//修改
             fw.flush();
             fw.close();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -704,7 +716,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         String response_str = null;//清空字符串
         response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
         /*查询结果为空*/
-        if (response_str == null) {
+        if (response_str == null)
+        {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -717,7 +730,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                 }
             });
         }
-        else {
+        else
+        {
             JSONObject jsonObject_data = null;
             try {
                 JSONObject jsonObject2 = new JSONObject(response_str);//创建响应文件json对象
@@ -725,7 +739,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                 try {
                     jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
                     /*data存在且非空*/
-                    if (jsonObject_data != null && jsonObject_data.length() != 0) {
+                    if (jsonObject_data != null && jsonObject_data.length() != 0)
+                    {
                         Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
                         String keyName = String.valueOf(response_keys.next());//取键名
                         String response = jsonObject2.optJSONObject("response").optString(keyName);//取值
@@ -780,7 +795,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             }
 
                             String result = stringBuilder.toString();
-                            /*显示对话*/
+                            /*显示参数*/
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -790,10 +805,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                     // 通知 Adapter 数据已经改变
                                     adapter.notifyItemInserted(messages.size() - 1);
                                     recyclerView.scrollToPosition(messages.size() - 1);
+                                    id=null;//结束对话，进入下一轮
                                 }
                             });
                         }
-                    } else {
+                    }
+                    else {
                         /*显示对话*/
                         mainHandler.post(new Runnable() {
                             @Override
@@ -804,9 +821,10 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 // 通知 Adapter 数据已经改变
                                 adapter.notifyItemInserted(messages.size() - 1);
                                 recyclerView.scrollToPosition(messages.size() - 1);
+                                id=null;
                             }
                         });
-                    }
+                    }//数据库无数据
                 }
                 catch (Exception e) {
                     mainHandler.post(new Runnable() {
