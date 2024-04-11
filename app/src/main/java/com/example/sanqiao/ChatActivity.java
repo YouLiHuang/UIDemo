@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
 
 public class ChatActivity extends AppCompatActivity implements chatFragment.convert_finisher_listener, chatFragment.long_press_listener, chatFragment.pgBar_listener, CirclePgBar.timeout_listener {
 
-    private Handler mainHandler=new Handler(Looper.getMainLooper());   // 主线程
+    private Handler mainHandler = new Handler(Looper.getMainLooper());   // 主线程
     private Thread networkThread;
     private String id = null;
     final String url = "http://61.142.130.81:8001/api/session/";
@@ -81,17 +81,17 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
     static private String query_file_path;
     static private String filename; //保存文件时的文件名
     private int AUDIO_CODE = 101;
-    final private int VIBRATE_CODE=102;
+    final private int VIBRATE_CODE = 102;
     static private String response;
     private static String machine_id;
     private CirclePgBar pgBar;
-    private boolean pgBar_pause=false;
+    private boolean pgBar_pause = false;
 
-    public interface pgBar_value_listener{
+    public interface pgBar_value_listener {
         void onValueChange(int value);
     }
-    pgBar_value_listener pgBar_value_listener;
 
+    pgBar_value_listener pgBar_value_listener;
 
 
     @Override
@@ -107,7 +107,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         /*id文件路径*/
         id_file_path = file_init("session_id.json");
         /*查询文件路径*/
-        query_file_path=file_init("query.json");
+        query_file_path = file_init("query.json");
         /*录音文件路径*/
         record_file_path = getSaveFilePath("ideal");
         /*向键盘碎片传递路径*/
@@ -173,14 +173,14 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         findViewById(R.id.chat_clear).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                id=null;
+                id = null;
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        int count=messages.size();
+                        int count = messages.size();
                         messages.clear();//清空message
                         // 通知 Adapter 数据已经改变
-                        adapter.notifyItemRangeChanged(0,count);
+                        adapter.notifyItemRangeChanged(0, count);
                     }
                 });
 
@@ -290,18 +290,19 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             @Override
             public void run() {
                 pgBar.setVisibility(View.GONE);
-                CommonUtils.showShortMsg(ChatActivity.this,"录制超时！");
+                CommonUtils.showShortMsg(ChatActivity.this, "录制超时！");
             }
         });
 
 
     }
+
     @Override
     public void onPgBar_process(boolean on_off) {
 
-        if(on_off==true)//开启进度条
+        if (on_off == true)//开启进度条
         {
-            pgBar_pause=false;
+            pgBar_pause = false;
             /*打开进度条*/
             mainHandler.post(new Runnable() {
                 @Override
@@ -312,17 +313,14 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (true&&!pgBar_pause)
-                    {
-                        int value=pgBar.get_mProgress();
-                        if(value<60)
-                        {
-                            pgBar.set_mProgress(value+1);//修改进度值
-                        }
-                        else {
+                    while (true && !pgBar_pause) {
+                        int value = pgBar.get_mProgress();
+                        if (value < 60) {
+                            pgBar.set_mProgress(value + 1);//修改进度值
+                        } else {
                             /*超时*/
-                            pgBar_pause=true;
-                            CommonUtils.showShortMsg(ChatActivity.this,"录音超时！");
+                            pgBar_pause = true;
+                            CommonUtils.showShortMsg(ChatActivity.this, "录音超时！");
                             pgBar.set_mProgress(0);//修改进度值
                             //关闭进度条
                             mainHandler.post(new Runnable() {
@@ -342,9 +340,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
                 }
             }).start();
-        }
-        else {
-            pgBar_pause=true;
+        } else {
+            pgBar_pause = true;
             //关闭进度条
             mainHandler.post(new Runnable() {
                 @Override
@@ -355,18 +352,20 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             });
         }
     }
+
     /*长按监听*/
     @Override
     public void onLongPress() {
-        if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED) {
             // 如果权限未被授予，向用户请求权限
             ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.VIBRATE}, VIBRATE_CODE);
-        }else {
+        } else {
             // 获取系统的振动服务?
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(100);// 振动 100 毫秒
         }
     }
+
     /*语音转换完成监听*/
     @Override
     public void onCompleted() {
@@ -422,29 +421,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             @Override
             public void run() {
                 try {
-                    if (!Thread.currentThread().isInterrupted())//中断检测
-                    {
-                        if (id == null) query_idNull(query);
-                        else query_withId(query);
-                    }
+                    if (id == null) query_idNull(query);
+                    else query_withId(query);
                 } catch (Exception e) {
-                    /*超时，网络线程被定时线程打断*/
-                    Thread.currentThread().interrupt(); // 重新设置中断状态
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
-                            messages.add(responseMessage);
-                            Handler mainHandler = new Handler(Looper.getMainLooper());
-                            // 通知 Adapter 数据已经改变
-                            adapter.notifyItemInserted(messages.size() - 1);
-                            recyclerView.scrollToPosition(messages.size() - 1);
-                        }
-                    });
                     e.printStackTrace();
                 }
             }
-
         });
         networkThread.start();//开启线程
     }
@@ -461,15 +443,30 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         /*发起空的post请求*/
         File post_output = null;
         post_output = new File(id_file_path);//输出流，解析得到的查询命令
         /*设置请求*/
-        HttpRequest request = new HttpRequest("http://61.142.130.81:8001/api/session/start", "POST");
-        request.connectTimeout(10000);//10s超时
-        request.acceptJson();//设置header
-        request.contentType("application/json");//设置contentType
-        request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
+        try {
+            HttpRequest request = new HttpRequest("http://61.142.130.81:8001/api/session/start", "POST");
+            request.connectTimeout(10000);//10s超时
+            request.acceptJson();//设置header
+            request.contentType("application/json");//设置contentType
+            request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
+        } catch (RuntimeException e) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
+                    messages.add(responseMessage);
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // 通知 Adapter 数据已经改变
+                    adapter.notifyItemInserted(messages.size() - 1);
+                    recyclerView.scrollToPosition(messages.size() - 1);
+                }
+            });//网络超时
+        }
 
         /*解析id*/
         String session_id = readJsonFile(id_file_path);//读取id的json文件
@@ -484,52 +481,68 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         id = jsonObject.optString(keyname);
 
         /*获取id成功，并构建新的url进行查新*/
-        if(id!=null)
-        {
-            StringBuilder sb=new StringBuilder();
+        if (id != null) {
+            StringBuilder sb = new StringBuilder();
             sb.append(url).append(id).append("/?query=").append(query);/*构建新的url*/
-            /*修改查询文件*/
+
+            /*修改查询文件，随后发起新的请求*/
             try {
-                JSONObject query_js=new JSONObject();
-                query_js.put("query",response);
-                FileWriter fw=new FileWriter(query_file_path);
+                JSONObject query_js = new JSONObject();
+                query_js.put("query", response);
+                FileWriter fw = new FileWriter(query_file_path);
                 fw.write("");//清空
                 fw.flush();
                 fw.write(query_js.toString());//修改
                 fw.flush();
                 fw.close();
-                /*发起查询*/
-                queryRequest(query_file_path,WebResponsePath,sb.toString());//post查询
-                /*解析查询结果*/
-                String response_str=null;//清空字符串
-                response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
-                if(response_str==null)
-                {
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Message responseMessage = new Message("查询失败！", Message.TYPE_RECEIVED);
-                            messages.add(responseMessage);
-                            Handler mainHandler = new Handler(Looper.getMainLooper());
-                            // 通知 Adapter 数据已经改变
-                            adapter.notifyItemInserted(messages.size() - 1);
-                            recyclerView.scrollToPosition(messages.size() - 1);
-                        }
-                    });//查询失败
-                }
-                else
-                {
-                    JSONObject jsonObject2=new JSONObject(response_str);//创建响应文件json对象
-                    JSONObject jsonObject_data=null;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
 
-                    //获取json下response节点下的data节点
-                    try {
+            /*发起查询*/
+            try {
+                queryRequest(query_file_path, WebResponsePath, sb.toString());//post查询
+            } catch (RuntimeException e) {//超时
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
+                        messages.add(responseMessage);
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        // 通知 Adapter 数据已经改变
+                        adapter.notifyItemInserted(messages.size() - 1);
+                        recyclerView.scrollToPosition(messages.size() - 1);
+                    }
+                });//网络超时
+            }
+
+            /*解析查询结果*/
+            String response_str = null;//清空字符串
+            response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
+            if (response_str == null) {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Message responseMessage = new Message("查询失败！", Message.TYPE_RECEIVED);
+                        messages.add(responseMessage);
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+                        // 通知 Adapter 数据已经改变
+                        adapter.notifyItemInserted(messages.size() - 1);
+                        recyclerView.scrollToPosition(messages.size() - 1);
+                    }
+                });//查询失败
+            } else {
+                JSONObject jsonObject_data = null;
+                try {
+                    JSONObject jsonObject2 = new JSONObject(response_str);//创建响应文件json对象
+                    try {//尝试获取json下response节点下的data节点
                         jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
                         /*data存在且非空*/
-                        if(jsonObject_data!=null && jsonObject_data.length() != 0)  {
+                        if (jsonObject_data != null && jsonObject_data.length() != 0) {
                             Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
-                            String keyName=String.valueOf(response_keys.next());//取键名
-                            String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
+                            String keyName = String.valueOf(response_keys.next());//取键名
+                            String response = jsonObject2.optJSONObject("response").optString(keyName);//取值
                             //filename = getFilename(response);
                             /*显示对话*/
                             mainHandler.post(new Runnable() {
@@ -608,16 +621,14 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                                 }
                             });
                         }
-                    }/*data不存在*/
-                    catch (Exception e)
-                    {
+                    }/*data不存在*/ catch (Exception e) {
                         /*没有data节点*/
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 Iterator<String> keys2 = jsonObject2.keys();//取键,此时文件节点下仅有一个键值对
-                                String keyname2=String.valueOf(keys2.next());//取键名
-                                String response=jsonObject2.optString(keyname2);//取值
+                                String keyname2 = String.valueOf(keys2.next());//取键名
+                                String response = jsonObject2.optString(keyname2);//取值
                                 Message responseMessage = new Message(response, Message.TYPE_RECEIVED);
                                 messages.add(responseMessage);
                                 Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -627,16 +638,17 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             }
                         });
                     }
-
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }catch (Exception e)
-            {
-                e.printStackTrace();
+
+
             }
 
         }
         /*获取id 失败*/
-        else {
+        else
+        {
             mainHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -653,48 +665,70 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
     }
 
     private void query_withId(String query) {
-        StringBuilder sb=new StringBuilder();
+
+        StringBuilder sb = new StringBuilder();
         sb.append(url).append(id).append("/?query=").append(query);/*构建新的url*/
+
         try {
             /*修改查询文件*/
-            JSONObject query_js=new JSONObject();
-            query_js.put("query",query);
-            FileWriter fw=new FileWriter(query_file_path);
+            JSONObject query_js = new JSONObject();
+            query_js.put("query", query);
+            FileWriter fw = new FileWriter(query_file_path);
             fw.write("");//清空
             fw.flush();
             fw.write(query_js.toString());//修改
             fw.flush();
             fw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            /*发起查询*/
-            queryRequest(query_file_path,WebResponsePath,sb.toString());//post查询
-            /*解析查询结果*/
-            String response_str=null;//清空字符串
-            response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
-            if(response_str==null) {/*查询结果为空*/
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Message responseMessage = new Message("查询失败！", Message.TYPE_RECEIVED);
-                        messages.add(responseMessage);
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        // 通知 Adapter 数据已经改变
-                        adapter.notifyItemInserted(messages.size() - 1);
-                        recyclerView.scrollToPosition(messages.size() - 1);
-                    }
-                });
-            }
-            else {
-                JSONObject jsonObject2=new JSONObject(response_str);//创建响应文件json对象
-                JSONObject jsonObject_data=null;
-                //获取json下response节点下的data节点
+        /*发起查询*/
+        try {
+            queryRequest(query_file_path, WebResponsePath, sb.toString());//post查询
+        } catch (RuntimeException e) {//超时
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
+                    messages.add(responseMessage);
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // 通知 Adapter 数据已经改变
+                    adapter.notifyItemInserted(messages.size() - 1);
+                    recyclerView.scrollToPosition(messages.size() - 1);
+                }
+            });//网络超时
+        }
+
+        /*解析查询结果*/
+        String response_str = null;//清空字符串
+        response_str = readJsonFile(WebResponsePath);//读取post得到的json文件转为字符串
+        /*查询结果为空*/
+        if (response_str == null) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Message responseMessage = new Message("查询失败！", Message.TYPE_RECEIVED);
+                    messages.add(responseMessage);
+                    Handler mainHandler = new Handler(Looper.getMainLooper());
+                    // 通知 Adapter 数据已经改变
+                    adapter.notifyItemInserted(messages.size() - 1);
+                    recyclerView.scrollToPosition(messages.size() - 1);
+                }
+            });
+        }
+        else {
+            JSONObject jsonObject_data = null;
+            try {
+                JSONObject jsonObject2 = new JSONObject(response_str);//创建响应文件json对象
+                //尝试获取json下response节点下的data节点，并进行数据解析
                 try {
                     jsonObject_data = jsonObject2.optJSONObject("response").optJSONObject("data");
                     /*data存在且非空*/
-                    if(jsonObject_data!=null && jsonObject_data.length() != 0)  {
+                    if (jsonObject_data != null && jsonObject_data.length() != 0) {
                         Iterator<String> response_keys = jsonObject2.optJSONObject("response").keys();//取response节点的键值对
-                        String keyName=String.valueOf(response_keys.next());//取键名
-                        String response=jsonObject2.optJSONObject("response").optString(keyName);//取值
+                        String keyName = String.valueOf(response_keys.next());//取键名
+                        String response = jsonObject2.optJSONObject("response").optString(keyName);//取值
                         //filename = getFilename(response);
                         /*显示对话*/
                         mainHandler.post(new Runnable() {
@@ -774,15 +808,13 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         });
                     }
                 }
-                catch (Exception e)
-                {
-                    /*没有data节点*/
+                catch (Exception e) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             Iterator<String> keys2 = jsonObject2.keys();//取键,此时文件节点下仅有一个键值对
-                            String keyname2=String.valueOf(keys2.next());//取键名
-                            String response=jsonObject2.optString(keyname2);//取值
+                            String keyname2 = String.valueOf(keys2.next());//取键名
+                            String response = jsonObject2.optString(keyname2);//取值
                             Message responseMessage = new Message(response, Message.TYPE_RECEIVED);
                             messages.add(responseMessage);
                             Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -791,18 +823,17 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             recyclerView.scrollToPosition(messages.size() - 1);
                         }
                     });
-                }
-
-
+                }/*没有data节点*/
             }
+            catch (Exception e) {
+                /*js报错*/
+                e.printStackTrace();
+            }
+
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+
 
     }
-
 
 
 }
