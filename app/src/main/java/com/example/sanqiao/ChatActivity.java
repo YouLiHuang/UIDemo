@@ -86,7 +86,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
     private static String machine_id;
     private CirclePgBar pgBar;
     private boolean pgBar_pause = false;
-    private EditText messageEditText;
+
     private keyboardFragment keyboard;
 
     public interface pgBar_value_listener {
@@ -205,23 +205,11 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             public void onClick(View v) {
                 try {
                     FrameLayout frameLayout=findViewById(R.id.chat_fragment);
-                    messageEditText=frameLayout.findViewById(R.id.chat_edittext);
+                    EditText messageEditText=frameLayout.findViewById(R.id.chat_edittext);
                     String messageText = messageEditText.getText().toString();//获取输入的信息
+                    messageEditText.setText("");
                     // 创建一个新的 Message 对象
-                    Message newMessage = new Message(messageText, Message.TYPE_SENT);//true false决定 发送/接受
-                    // 将新消息添加到消息列表中
-                    messages.add(newMessage);
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 通知 Adapter 数据已经改变
-                            adapter.notifyItemInserted(messages.size() - 1);
-                            recyclerView.scrollToPosition(messages.size() - 1);
-                            // 清空消息输入框
-                            messageEditText.setText("");
-                        }
-                    });
-
+                    chat_SendMessage(messageText);
                     /*文本查询*/
                     Query(messageText);
                 }
@@ -335,7 +323,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         int value = pgBar.get_mProgress();
                         if (value < 60) {
                             pgBar.set_mProgress(value + 1);//修改进度值
-                        } else {
+                        }
+                        else {
                             /*超时*/
                             pgBar_pause = true;
                             CommonUtils.showShortMsg(ChatActivity.this, "录音超时！");
@@ -705,6 +694,21 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             @Override
             public void run() {
                 Message responseMessage = new Message(message, Message.TYPE_RECEIVED);
+                messages.add(responseMessage);
+                Handler mainHandler = new Handler(Looper.getMainLooper());
+                // 通知 Adapter 数据已经改变
+                adapter.notifyItemInserted(messages.size() - 1);
+                recyclerView.scrollToPosition(messages.size() - 1);
+            }
+        });
+    }
+
+    public void chat_SendMessage(String message)
+    {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Message responseMessage = new Message(message, Message.TYPE_SENT);
                 messages.add(responseMessage);
                 Handler mainHandler = new Handler(Looper.getMainLooper());
                 // 通知 Adapter 数据已经改变
