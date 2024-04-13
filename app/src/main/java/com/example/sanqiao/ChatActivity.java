@@ -145,7 +145,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
         Hide_SystemUI();
         /*主布局，设置监听*/
         main_layout = findViewById(R.id.chat_activity_main_layout);
-        
+
         Set_Listener();
 
 
@@ -469,17 +469,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             request.receive(post_output);//上传查询请求，获取响应并拷贝到本地文件
         }
         catch (RuntimeException e) {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
-                    messages.add(responseMessage);
-                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                    // 通知 Adapter 数据已经改变
-                    adapter.notifyItemInserted(messages.size() - 1);
-                    recyclerView.scrollToPosition(messages.size() - 1);
-                }
-            });//网络超时
+            chat_ReceiveMessage("网络超时！");
         }
 
         /*解析id*/
@@ -519,17 +509,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                 queryRequest(query_file_path, WebResponsePath, sb.toString());//post查询
             }
             catch (RuntimeException e) {//超时
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Message responseMessage = new Message("网络超时！", Message.TYPE_RECEIVED);
-                        messages.add(responseMessage);
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        // 通知 Adapter 数据已经改变
-                        adapter.notifyItemInserted(messages.size() - 1);
-                        recyclerView.scrollToPosition(messages.size() - 1);
-                    }
-                });//网络超时
+                chat_ReceiveMessage("网络超时！");
             }
 
             /*解析查询结果*/
@@ -538,17 +518,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             /*查询结果为空*/
             if (response_str == null)
             {
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Message responseMessage = new Message("查询失败！", Message.TYPE_RECEIVED);
-                        messages.add(responseMessage);
-                        Handler mainHandler = new Handler(Looper.getMainLooper());
-                        // 通知 Adapter 数据已经改变
-                        adapter.notifyItemInserted(messages.size() - 1);
-                        recyclerView.scrollToPosition(messages.size() - 1);
-                    }
-                });
+                chat_ReceiveMessage("查询失败！");
             }
             else
             {
@@ -566,17 +536,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             String response = jsonObject2.optJSONObject("response").optString(keyName);//取值
                             //filename = getFilename(response);
                             /*显示对话*/
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Message responseMessage = new Message(response, Message.TYPE_RECEIVED);
-                                    messages.add(responseMessage);
-                                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                                    // 通知 Adapter 数据已经改变
-                                    adapter.notifyItemInserted(messages.size() - 1);
-                                    recyclerView.scrollToPosition(messages.size() - 1);
-                                }
-                            });
+                            chat_ReceiveMessage(response);
 
                             List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                             //String result = queryUtil.getResult(weldinginfoList);
@@ -584,78 +544,35 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                         }
                         else {
                             /*显示对话*/
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Message responseMessage = new Message("抱歉，数据库暂无此类数据", Message.TYPE_RECEIVED);
-                                    messages.add(responseMessage);
-                                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                                    // 通知 Adapter 数据已经改变
-                                    adapter.notifyItemInserted(messages.size() - 1);
-                                    recyclerView.scrollToPosition(messages.size() - 1);
-                                    id=null;
-                                }
-                            });
+                            chat_ReceiveMessage("抱歉，数据库暂无此类数据");
+                            id=null;
                         }//数据库无数据
                     }
+                    /*没有data节点*/
                     catch (Exception e) {
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Iterator<String> keys2 = jsonObject2.keys();//取键,此时文件节点下仅有一个键值对
-                                String keyname2 = String.valueOf(keys2.next());//取键名
-                                String response = jsonObject2.optString(keyname2);//取值
-                                Message responseMessage = new Message(response, Message.TYPE_RECEIVED);
-                                messages.add(responseMessage);
-                                Handler mainHandler = new Handler(Looper.getMainLooper());
-                                // 通知 Adapter 数据已经改变
-                                adapter.notifyItemInserted(messages.size() - 1);
-                                recyclerView.scrollToPosition(messages.size() - 1);
-                            }
-                        });
-                    }/*没有data节点*/
+                        Iterator<String> keys2 = jsonObject2.keys();//取键,此时文件节点下仅有一个键值对
+                        String keyname2 = String.valueOf(keys2.next());//取键名
+                        String response = jsonObject2.optString(keyname2);//取值
+                        chat_ReceiveMessage(response);
+                    }
                 }
                 catch (Exception e) {
                     /*js报错*/
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Message responseMessage = new Message("服务器出错！", Message.TYPE_RECEIVED);
-                            messages.add(responseMessage);
-                            Handler mainHandler = new Handler(Looper.getMainLooper());
-                            // 通知 Adapter 数据已经改变
-                            adapter.notifyItemInserted(messages.size() - 1);
-                            recyclerView.scrollToPosition(messages.size() - 1);
-                        }
-                    });
+                    chat_ReceiveMessage("服务器出错！");
                 }
-
             }
-
         }
         /*获取id 失败*/
         else
         {
-            mainHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Message responseMessage = new Message("获取id失败！", Message.TYPE_RECEIVED);
-                    messages.add(responseMessage);
-                    Handler mainHandler = new Handler(Looper.getMainLooper());
-                    // 通知 Adapter 数据已经改变
-                    adapter.notifyItemInserted(messages.size() - 1);
-                    recyclerView.scrollToPosition(messages.size() - 1);
-                }
-            });
+            chat_ReceiveMessage("获取id失败！");
         }
-
     }
 
     private void query_withId(String query) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(url).append(id).append("/?query=").append(query);/*构建新的url*/
-
         try {
             /*修改查询文件*/
             JSONObject query_js = new JSONObject();
@@ -668,7 +585,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             fw.close();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            chat_ReceiveMessage("文件读写异常！");
         }
 
         /*发起查询*/
@@ -712,6 +629,7 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                     //数据库无数据
                     else {
                         chat_ReceiveMessage("抱歉，数据库暂无此类数据");
+                        id=null;
                     }
                 }
                 catch (Exception e) {
