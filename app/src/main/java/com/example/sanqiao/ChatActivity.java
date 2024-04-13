@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -203,8 +204,8 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
             @Override
             public void onClick(View v) {
                 try {
-                    View view = keyboard.getView();
-                    messageEditText=view.findViewById(R.id.chat_edittext);
+                    FrameLayout frameLayout=findViewById(R.id.chat_fragment);
+                    messageEditText=frameLayout.findViewById(R.id.chat_edittext);
                     String messageText = messageEditText.getText().toString();//获取输入的信息
                     // 创建一个新的 Message 对象
                     Message newMessage = new Message(messageText, Message.TYPE_SENT);//true false决定 发送/接受
@@ -223,6 +224,11 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
                     /*文本查询*/
                     Query(messageText);
+                }
+                catch (NullPointerException e)
+                {
+                    /*当前为语音输入*/
+                    chat_ReceiveMessage("请长按录音查询！");
                 }
                 catch (Exception e)
                 {
@@ -541,11 +547,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
                             List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                             //String result = queryUtil.getResult(weldinginfoList);
                             List_to_String(weldinginfoList);
+                            id=null;
                         }
                         else {
-                            /*显示对话*/
+                            /*显示对话  数据库无数据（data存在但空）*/
                             chat_ReceiveMessage("抱歉，数据库暂无此类数据");
-                            id=null;
+                            //id=null;
                         }//数据库无数据
                     }
                     /*没有data节点*/
@@ -625,11 +632,12 @@ public class ChatActivity extends AppCompatActivity implements chatFragment.conv
 
                         List<Weldinginfo> weldinginfoList = queryUtil.parseJson(response_str);//将str转换为参数列表
                         List_to_String(weldinginfoList);
+                        id=null;
                     }
-                    //数据库无数据
+                    //数据库无数据（data存在但空）
                     else {
                         chat_ReceiveMessage("抱歉，数据库暂无此类数据");
-                        id=null;
+                        //id=null;
                     }
                 }
                 catch (Exception e) {

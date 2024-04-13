@@ -166,6 +166,7 @@ public class chatFragment extends Fragment implements Web_Api.covert_finished_li
             public void onClick(View view) {
                 /*切换键盘时传递路径*/
                 keyboardFragment fragment = new keyboardFragment();//创建一个键盘输入布局
+
                 Bundle bundle = new Bundle();
                 bundle.putString("recordPath", recordPath);
                 bundle.putString("parsePath", parsePath);
